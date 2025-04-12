@@ -1,0 +1,12 @@
+{
+  "model": "resnet50",
+  "device": "cuda",
+  "total_images": 1600,
+  "total_time": 6.041454792022705,
+  "images_per_second": 264.8368737464827,
+  "avg_batch_time": 0.1208290958404541,
+  "std_batch_time": 0.1442170065082195,
+  "min_batch_time": 0.09953022003173828,
+  "max_batch_time": 1.1302921772003174,
+  "avg_accuracy": 0.0
+}

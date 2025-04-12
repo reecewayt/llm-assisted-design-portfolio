@@ -1,3 +1,15 @@
+/* Verilator/Verilog Artifacts */
 */obj_dir
 *.vcd
 *.dump
+
+
+/* C++ Build Artifacts */
+*.o
+
+/* Python Artifiacts */
+**.venv/
+**__pycache__/
+*.pyc
+**.tar.gz
+**data/
