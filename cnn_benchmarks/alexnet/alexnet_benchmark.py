@@ -1,23 +1,20 @@
 """
 AlexNet CNN Benchmarking Module
 
-This module provides functionality to:
-1. Load a pre-trained AlexNet model
-2. Import a standard dataset (CIFAR-10, CIFAR-100, or ImageNet)
-3. Benchmark inference performance on the dataset
+This module benchmarks inference performance of AlexNet on ImageNet.
 """
 
 import time
 import argparse
-from typing import Tuple, List, Dict, Any
+import os
+import datetime
+import json
 import numpy as np
 import torch
-import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torchvision.models import alexnet, AlexNet_Weights
-import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -25,15 +22,8 @@ from tqdm import tqdm
 class AlexNetBenchmark:
     """Class for benchmarking inference performance of AlexNet model."""
 
-    AVAILABLE_DATASETS = ['cifar10', 'cifar100', 'imagenet']
-
-    def __init__(self, device: str = None):
-        """
-        Initialize the benchmark with AlexNet model.
-
-        Args:
-            device: Device to run inference on ('cuda' or 'cpu')
-        """
+    def __init__(self, device=None):
+        """Initialize the benchmark with AlexNet model."""
         self.model_name = 'alexnet'
 
         # Set device
@@ -42,7 +32,7 @@ class AlexNetBenchmark:
         else:
             self.device = torch.device(device)
 
-        # Load model using the weights parameter
+        # Load model
         print(f"Loading {self.model_name} on {self.device}...")
         self.model = alexnet(weights=AlexNet_Weights.DEFAULT)
         self.model = self.model.to(self.device)
@@ -51,56 +41,15 @@ class AlexNetBenchmark:
         # Get preprocessing transform from the weights
         self.transform = AlexNet_Weights.DEFAULT.transforms()
 
-    def load_standard_dataset(self, dataset_name: str = 'cifar10', batch_size: int = 32, num_workers: int = 4) -> DataLoader:
-        """
-        Load a standard dataset.
-
-        Args:
-            dataset_name: Name of the dataset ('cifar10', 'cifar100', or 'imagenet')
-            batch_size: Batch size for DataLoader
-            num_workers: Number of workers for data loading
-
-        Returns:
-            DataLoader for the dataset
-        """
-        dataset_name = dataset_name.lower()
-        if dataset_name not in self.AVAILABLE_DATASETS:
-            raise ValueError(f"Dataset {dataset_name} not available. Choose from: {self.AVAILABLE_DATASETS}")
-
+    def load_imagenet(self, data_path='./data/imagenet', batch_size=32, num_workers=4):
+        """Load ImageNet validation dataset."""
         try:
-            # Define transformations based on dataset
-            if dataset_name in ['cifar10', 'cifar100']:
-                # For CIFAR, we need to resize to match AlexNet's expected input (224x224)
-                transform = transforms.Compose([
-                    transforms.Resize(224),
-                    transforms.ToTensor(),
-                    transforms.Normalize(
-                        mean=[0.485, 0.456, 0.406],
-                        std=[0.229, 0.224, 0.225]
-                    )
-                ])
-            else:  # ImageNet
-                transform = self.transform
-
-            # Load the appropriate dataset
-            if dataset_name == 'cifar10':
-                dataset = torchvision.datasets.CIFAR10(
-                    root='./data', train=False, download=True, transform=transform
-                )
-            elif dataset_name == 'cifar100':
-                dataset = torchvision.datasets.CIFAR100(
-                    root='./data', train=False, download=True, transform=transform
-                )
-            else:  # ImageNet - This requires manual download due to licensing
-                try:
-                    dataset = torchvision.datasets.ImageNet(
-                        root='./data/imagenet', split='val', transform=transform
-                    )
-                except (RuntimeError, FileNotFoundError) as e:
-                    raise FileNotFoundError(
-                        "ImageNet dataset not found. Due to licensing, it must be downloaded manually. "
-                        "Please download ImageNet and place it in ./data/imagenet or use CIFAR-10/100 instead."
-                    ) from e
+            # ImageNet requires manual download due to licensing
+            dataset = torchvision.datasets.ImageNet(
+                root=data_path,
+                split='val',
+                transform=self.transform
+            )
 
             dataloader = DataLoader(
                 dataset,
@@ -110,55 +59,16 @@ class AlexNetBenchmark:
                 pin_memory=True if self.device.type == 'cuda' else False
             )
 
-            print(f"Loaded {dataset_name} dataset with {len(dataset)} images")
+            print(f"Loaded ImageNet validation dataset with {len(dataset)} images")
             return dataloader
 
         except Exception as e:
-            print(f"Error loading dataset: {e}")
-            raise
-
-    def load_custom_dataset(self, data_path: str, batch_size: int = 32, num_workers: int = 4) -> DataLoader:
-        """
-        Load a custom dataset from the given path.
-
-        Args:
-            data_path: Path to the dataset directory
-            batch_size: Batch size for DataLoader
-            num_workers: Number of workers for data loading
-
-        Returns:
-            DataLoader for the dataset
-        """
-        try:
-            from torchvision.datasets import ImageFolder
-            dataset = ImageFolder(root=data_path, transform=self.transform)
-
-            dataloader = DataLoader(
-                dataset,
-                batch_size=batch_size,
-                shuffle=False,
-                num_workers=num_workers,
-                pin_memory=True if self.device.type == 'cuda' else False
+            raise FileNotFoundError(
+                f"Error loading ImageNet: {e}\nPlease make sure ImageNet is correctly downloaded and placed in {data_path}"
             )
 
-            print(f"Loaded custom dataset with {len(dataset)} images from {data_path}")
-            return dataloader
-
-        except Exception as e:
-            print(f"Error loading custom dataset: {e}")
-            raise
-
-    def benchmark_inference(self, dataloader: DataLoader, num_batches: int = None) -> Dict[str, Any]:
-        """
-        Benchmark inference performance.
-
-        Args:
-            dataloader: DataLoader with the validation dataset
-            num_batches: Number of batches to use (None for all)
-
-        Returns:
-            Dictionary with benchmark results
-        """
+    def benchmark_inference(self, dataloader, num_batches=None):
+        """Benchmark inference performance."""
         total_time = 0
         processed_images = 0
         batch_times = []
@@ -210,13 +120,8 @@ class AlexNetBenchmark:
 
         return results
 
-    def display_results(self, results: Dict[str, Any]) -> None:
-        """
-        Display benchmark results in a readable format.
-
-        Args:
-            results: Dictionary with benchmark results
-        """
+    def display_results(self, results):
+        """Display benchmark results in a readable format."""
         print("\n" + "="*50)
         print(f"BENCHMARK RESULTS: {results['model']} on {results['device']}")
         print("="*50)
@@ -230,14 +135,8 @@ class AlexNetBenchmark:
         print(f"Average accuracy: {results['avg_accuracy']*100:.2f}%")
         print("="*50)
 
-    def plot_results(self, results: Dict[str, Any], save_path: str = None) -> None:
-        """
-        Plot benchmark results.
-
-        Args:
-            results: Dictionary with benchmark results
-            save_path: Path to save the plots (None to display only)
-        """
+    def plot_results(self, results, save_path=None):
+        """Plot benchmark results."""
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
 
         # Plot batch times
@@ -259,63 +158,77 @@ class AlexNetBenchmark:
 
         if save_path:
             plt.savefig(save_path)
-            print(f"Plots saved to {save_path}")
+            print(f"Plot saved to {save_path}")
         else:
             plt.show()
 
 
-def run_benchmark_from_args():
-    """Run benchmark from command line arguments."""
-    parser = argparse.ArgumentParser(description='AlexNet Inference Benchmark')
-    parser.add_argument('--dataset', type=str, default='cifar10',
-                        choices=AlexNetBenchmark.AVAILABLE_DATASETS + ['custom'],
-                        help='Dataset to use for benchmarking')
-    parser.add_argument('--data-path', type=str, default=None,
-                        help='Path to custom dataset directory (only used with --dataset=custom)')
+def main():
+    """Main entry point for the benchmark runner."""
+    parser = argparse.ArgumentParser(description='AlexNet Benchmark Runner')
+
+    parser.add_argument('--data-path', type=str, default='./data/imagenet',
+                       help='Path to ImageNet dataset root directory')
     parser.add_argument('--batch-size', type=int, default=32,
-                        help='Batch size for inference')
+                       help='Batch size for inference')
     parser.add_argument('--num-batches', type=int, default=50,
-                        help='Number of batches to use (0 for all)')
+                       help='Number of batches to use (0 for all)')
     parser.add_argument('--device', type=str, default=None,
-                        help='Device to run on (cuda/cpu)')
+                       help='Device to run on (cuda/cpu)')
     parser.add_argument('--workers', type=int, default=4,
-                        help='Number of data loading workers')
-    parser.add_argument('--save-plot', type=str, default=None,
-                        help='Path to save the plots')
+                       help='Number of data loading workers')
 
     args = parser.parse_args()
 
     # Create benchmark instance
     benchmark = AlexNetBenchmark(device=args.device)
 
-    # Load dataset
-    if args.dataset == 'custom' and args.data_path:
-        dataloader = benchmark.load_custom_dataset(
+    try:
+        # Load dataset
+        print(f"Loading ImageNet dataset from {args.data_path}...")
+        dataloader = benchmark.load_imagenet(
             data_path=args.data_path,
             batch_size=args.batch_size,
             num_workers=args.workers
         )
-    else:
-        dataloader = benchmark.load_standard_dataset(
-            dataset_name=args.dataset,
-            batch_size=args.batch_size,
-            num_workers=args.workers
-        )
 
-    # Set number of batches (None for all)
-    num_batches = None if args.num_batches == 0 else args.num_batches
+        # Set number of batches (None for all)
+        num_batches = None if args.num_batches == 0 else args.num_batches
 
-    # Run benchmark
-    results = benchmark.benchmark_inference(dataloader, num_batches=num_batches)
+        # Run benchmark
+        print(f"Starting benchmark of AlexNet...")
+        results = benchmark.benchmark_inference(dataloader, num_batches=num_batches)
 
-    # Display results
-    benchmark.display_results(results)
+        # Display results
+        benchmark.display_results(results)
 
-    # Plot results
-    benchmark.plot_results(results, save_path=args.save_plot)
+        # Ensure results directory exists
+        results_dir = './results/alexnet'
+        os.makedirs(results_dir, exist_ok=True)
 
-    return results
+        # Save results
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        plot_filename = f"alexnet_imagenet_{timestamp}.png"
+        json_filename = f"alexnet_imagenet_{timestamp}.json"
+
+        plot_path = os.path.join(results_dir, plot_filename)
+        json_path = os.path.join(results_dir, json_filename)
+
+        # Save plot
+        benchmark.plot_results(results, save_path=plot_path)
+
+        # Save results as JSON (exclude numpy arrays which aren't JSON serializable)
+        json_results = {k: v for k, v in results.items() if k not in ['batch_times', 'accuracies']}
+        with open(json_path, 'w') as f:
+            json.dump(json_results, f, indent=2)
+
+        print(f"Benchmark results saved to {results_dir}")
+        print(f"- Plot: {plot_filename}")
+        print(f"- Data: {json_filename}")
+
+    except Exception as e:
+        print(f"Error running benchmark: {e}")
 
 
 if __name__ == "__main__":
-    run_benchmark_from_args()
+    main()

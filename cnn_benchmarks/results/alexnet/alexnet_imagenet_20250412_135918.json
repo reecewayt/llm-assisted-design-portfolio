@@ -1,0 +1,12 @@
+{
+  "model": "alexnet",
+  "device": "cuda",
+  "total_images": 1600,
+  "total_time": 2.400954484939575,
+  "images_per_second": 666.4016373639283,
+  "avg_batch_time": 0.048019089698791505,
+  "std_batch_time": 0.2248667069420111,
+  "min_batch_time": 0.01565074920654297,
+  "max_batch_time": 1.6220850944519043,
+  "avg_accuracy": 0.739375
+}

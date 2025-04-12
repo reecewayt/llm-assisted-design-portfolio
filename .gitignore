@@ -13,3 +13,6 @@
 *.pyc
 **.tar.gz
 **data/
+
+/* VS Code */
+.vscode/
