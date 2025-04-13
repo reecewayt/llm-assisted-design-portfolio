@@ -1,6 +1,6 @@
 # CNN Benchmarking Tool
 
-This project provides a tool for benchmarking the inference performance of Convolutional Neural Networks (CNNs). Currently, it supports benchmarking AlexNet on the ImageNet dataset. For more details and long form context, please see the accompanying wiki page. [!TODO:]. I've chosen AlexNet because of its simple architecture, and ImageNet because the pretrained model through pytorch was trained on this dataset. Hence, this project is more concerned with inference benchmarking than training for other datasets.
+This project provides a few scripts for benchmarking the inference performance of Convolutional Neural Networks (CNNs). Currently, it supports benchmarking AlexNet on the ImageNet dataset. For more details and long form context, please see the accompanying [wiki page](https://github.com/reecewayt/llm-assisted-design-portfolio/wiki/AlexNetBenchmarking). I've chosen AlexNet because of its simple architecture, and ImageNet because the pretrained model through pytorch was trained on this dataset.
 
 ## Project Structure
 
@@ -8,7 +8,9 @@ This project provides a tool for benchmarking the inference performance of Convo
 cnn_benchmarks/
 ├── README.md
 ├── alexnet/
-│   └── alexnet_benchmark.py    # AlexNet benchmark implementation
+│   └── alexnet_benchmark.py    # Runs basic alexnet inference benchmarks
+|   └── alexnet_profiler.py     # Uses PyTorch Profiler to breakdown computation times
+|   └── alexnet_ai.py           # Computes Arithmetic Intensity of each layer
 ├── data/
 │   └── imagenet/               # ImageNet dataset
 │       ├── val/                # Validation images (structured)
@@ -17,11 +19,12 @@ cnn_benchmarks/
 │   └── alexnet/                # Benchmark results
 │       ├── *.json              # Metrics in JSON format
 │       └── *.png               # Performance plots
+|       └── *.txt               # .txt output from running scripts
 └── setup_imagenet.sh           # Script to set up ImageNet
 ```
 
 ## Prerequisites
-Before downloading imagenet and getting started with this project. Please run the `setup.sh` script in the root directory, which instantiates a python venv, and install the necessary python packages from the `requirements.txt` file.
+Before downloading imagenet and getting started with this project. Please run the `setup.sh` script in the root directory, which instantiates a python venv, and installs the necessary python packages from the `requirements.txt` file.
 
 ```bash
 cd path/to/llm-assisted-design-portfolio
@@ -90,18 +93,5 @@ The benchmark reports:
 - Minimum and maximum batch times
 - Average accuracy
 
-## Example Results
-
-```
-==================================================
-BENCHMARK RESULTS: alexnet on cuda
-==================================================
-Total images processed: 1600
-Total inference time: 2.40 seconds
-Throughput: 666.40 images/second
-Average batch inference time: 48.02 ms
-Standard deviation of batch time: 224.87 ms
-Min batch time: 15.65 ms
-Max batch time: 1622.09 ms
-Average accuracy: 73.94%
-```
+## Other results
+Result from running the other scripts can be found in `results/alexnet/profiler_results.txt` and `results/alexnet/arithmetic_intensity_results.txt`

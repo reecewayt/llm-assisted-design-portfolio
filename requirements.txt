@@ -10,3 +10,6 @@ matplotlib
 tqdm
 Pillow
 scipy
+memory_profiler
+networkx
+pygraphviz
