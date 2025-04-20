@@ -1,4 +1,4 @@
-# CNN Benchmarking Tool
+# CNN Computation Profiling
 
 This project provides a few scripts for benchmarking the inference performance of Convolutional Neural Networks (CNNs). Currently, it supports benchmarking AlexNet on the ImageNet dataset. For more details and long form context, please see the accompanying [wiki page](https://github.com/reecewayt/llm-assisted-design-portfolio/wiki/AlexNetBenchmarking). I've chosen AlexNet because of its simple architecture, and ImageNet because the pretrained model through pytorch was trained on this dataset.
 

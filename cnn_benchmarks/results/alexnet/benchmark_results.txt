@@ -1,0 +1,21 @@
+Loading alexnet on cuda...
+Loading ImageNet dataset from ./data/imagenet...
+Loaded ImageNet validation dataset with 50000 images
+Starting benchmark of AlexNet...
+
+==================================================
+BENCHMARK RESULTS: alexnet on cuda
+==================================================
+Total images processed: 1600
+Total inference time: 1.16 seconds
+Throughput: 1375.37 images/second
+Average batch inference time: 23.27 ms
+Standard deviation of batch time: 72.24 ms
+Min batch time: 12.00 ms
+Max batch time: 528.88 ms
+Average accuracy: 73.94%
+==================================================
+Plot saved to ./results/alexnet/alexnet_imagenet_20250414_113402.png
+Benchmark results saved to ./results/alexnet
+- Plot: alexnet_imagenet_20250414_113402.png
+- Data: alexnet_imagenet_20250414_113402.json
