@@ -1,18 +1,18 @@
 # llm-assisted-design-portfolio
-A collection of tasks, project, rapid protoypes, designs (etc.) for AI/ML Hardware Design. Leveraging co-design principles with LLM asistants.
+A collection of tasks, projects, rapid prototypes, designs (etc.) for AI/ML Hardware Design. Leveraging co-design principles with LLM assistants.
 
-Please see the following wik for more information: https://github.com/reecewayt/llm-assisted-design-portfolio/wiki
+Please see the following wiki for more information: https://github.com/reecewayt/llm-assisted-design-portfolio/wiki
 
 
 ### Submodule Information
-Note this epository uses Git submodules. To properly clone this repository with all its components, please use one of the following method
+Note that this repository uses Git submodules. To properly clone this repository with all its components, please use one of the following methods
 
 ```bash
 git clone --recurse-submodules git@github.com:reecewayt/llm-assisted-design-portfolio.git
 ```
 
 #### Updating Submodules
-To get the latest chagnes from the submodule repositories
+To get the latest changes from the submodule repositories
 ```bash
 # Update all submodules to their latest commits
 git submodule update --remote
