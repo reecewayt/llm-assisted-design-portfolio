@@ -2,6 +2,8 @@
 
 A collection of AI/ML hardware design projects demonstrating how modern LLM tools can accelerate the development of specialized computing architectures. This portfolio focuses on CNN acceleration through parallel processing arrays and explores various aspects of hardware design for machine learning workloads.
 
+> **Note**: This portfolio represents an experiment in LLM-assisted hardware design. The methodologies and results documented here contribute to understanding how AI tools can enhance traditional hardware design workflows while maintaining engineering rigor and verification standards.
+
 > **Disclaimer**: This project extensively leverages LLM assistance for code generation, design exploration, and documentation as part of a methodology study in AI-assisted hardware design.
 
 ## 🎯 Project Overview
@@ -129,4 +131,3 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-**Note**: This portfolio represents ongoing research in LLM-assisted hardware design. The methodologies and results documented here contribute to understanding how AI tools can enhance traditional hardware design workflows while maintaining engineering rigor and verification standards.
