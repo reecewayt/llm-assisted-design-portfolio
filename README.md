@@ -110,7 +110,7 @@ This portfolio demonstrates a new approach to hardware design that leverages Lar
 
 - **[Project Wiki](https://github.com/reecewayt/llm-assisted-design-portfolio/wiki)**: Comprehensive technical documentation and design methodology
 - **[CNN Accelerator Repository](https://github.com/reecewayt/cnn-accelerator)**: Complete ASIC design implementation
-- **Performance Analysis**: Detailed benchmark results and hardware characterization data
+- **[Performance Analysis](https://github.com/reecewayt/llm-assisted-design-portfolio/wiki/GEMMUnitProject)**: Detailed benchmark results and hardware characterization data
 
 ## 🔄 Submodule Management
 
